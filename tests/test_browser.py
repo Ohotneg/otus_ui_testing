@@ -1,4 +1,9 @@
-def test_browser(browser, base_url):
-    browser.get(base_url)
+from pages.main_page import MainPage
 
-    assert browser.title
+def test_browser(browser, base_url):
+
+    page = MainPage(browser, base_url)
+
+    page.open()
+
+    assert page.is_opened()

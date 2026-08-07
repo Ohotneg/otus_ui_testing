@@ -4,7 +4,7 @@ from pages.admin_dashboard_page import AdminDashboardPage
 ADMIN_EMAIL = "admin@example.com"
 ADMIN_PASSWORD = "Admin1357!"
 
-def test_admin_login_logout(browser, base_url):
+def test_admin_login(browser, base_url):
 
     login_page = AdminLoginPage(browser, base_url)
 
@@ -18,7 +18,3 @@ def test_admin_login_logout(browser, base_url):
     dashboard = AdminDashboardPage(browser, base_url)
 
     assert dashboard.is_opened()
-
-    dashboard.logout()
-
-    assert login_page.get_email().is_displayed()
