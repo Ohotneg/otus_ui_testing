@@ -1,16 +1,17 @@
 from pages.admin_login_page import AdminLoginPage
 from pages.admin_dashboard_page import AdminDashboardPage
+from pages.admin_products_page import AdminProductsPage
 
 ADMIN_EMAIL = "admin@example.com"
 ADMIN_PASSWORD = "Admin1357!"
 
-def test_admin_login_logout(browser, base_url):
+def test_admin_products_page(browser, base_url):
 
-    login_page = AdminLoginPage(browser, base_url)
+    login = AdminLoginPage(browser, base_url)
 
-    login_page.open()
+    login.open()
 
-    login_page.login(
+    login.login(
         ADMIN_EMAIL,
         ADMIN_PASSWORD
     )
@@ -19,6 +20,8 @@ def test_admin_login_logout(browser, base_url):
 
     assert dashboard.is_opened()
 
-    dashboard.logout()
+    products = AdminProductsPage(browser, base_url)
 
-    assert login_page.get_email().is_displayed()
+    products.open_products()
+
+    assert products.is_opened()

@@ -1,39 +1,15 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions as EC
+from pages.main_page import MainPage
 
 def test_change_currency_main(browser, base_url):
-    browser.get(base_url)
 
-    wait = WebDriverWait(browser, 10)
+    page = MainPage(browser, base_url)
 
-    product = wait.until(
-        EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "article.product-miniature")
-        )
-    )
+    page.open()
 
-    price_before = product.find_element(
-        By.CSS_SELECTOR,".product-miniature__price").text
+    price_before = page.get_first_product_price()
 
-    currency = Select(
-        browser.find_element(
-            By.CSS_SELECTOR, "select.js-currency-selector")
-    )
+    page.change_currency("USD $")
 
-    currency.select_by_visible_text("USD $")
-
-    wait.until(
-        EC.staleness_of(product)
-    )
-
-    product = wait.until(
-        EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "article.product-miniature")
-        )
-    )
-
-    price_after = product.find_element(
-        By.CSS_SELECTOR,".product-miniature__price").text
+    price_after = page.get_first_product_price()
 
     assert price_before != price_after

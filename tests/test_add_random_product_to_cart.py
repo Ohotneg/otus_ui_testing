@@ -1,57 +1,28 @@
 import random
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver import ActionChains
+from pages.main_page import MainPage
+from pages.add_to_cart_modal import AddToCartModal
+from pages.cart_page import CartPage
 
 def test_add_random_product_to_cart(browser, base_url):
-    browser.get(base_url)
 
-    wait = WebDriverWait(browser, 10)
+    page = MainPage(browser, base_url)
 
-    products = wait.until(
-        EC.presence_of_all_elements_located(
-            (By.CSS_SELECTOR, "article.product-miniature")
-        )
-    )
-    available_products = []
+    page.open()
 
-    for product in products:
-        buttons = product.find_elements(
-            By.CSS_SELECTOR,'button[data-button-action="add-to-cart"]'
-        )
-        if buttons:
-            available_products.append(product)
+    products = page.get_available_products()
 
-    product = random.choice(available_products)
+    product = random.choice(products)
 
-    product_name = product.find_element(
-        By.CSS_SELECTOR,"a.product-miniature__title").text
+    product_name = page.get_product_name(product)
 
-    add_button = product.find_element(
-        By.CSS_SELECTOR,'button[data-button-action="add-to-cart"]')
+    page.add_product_to_cart(product)
 
-    ActionChains(browser).move_to_element(product).perform()
+    modal = AddToCartModal(browser, base_url)
 
-    add_button.click()
+    modal.proceed_to_checkout()
 
-    modal = wait.until(
-        EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, "div.modal-footer")
-        )
-    )
+    cart = CartPage(browser, base_url)
 
-    checkout_button = modal.find_element(
-        By.CSS_SELECTOR,"a.btn.btn-primary")
-
-    checkout_button.click()
-
-    cart_product = wait.until(
-        EC.visibility_of_element_located(
-            (By.CSS_SELECTOR,"a.product-line__title:not(.product-line__item)")
-        )
-    )
-
-    cart_product_name = cart_product.text
+    cart_product_name = cart.get_product_name()
 
     assert product_name == cart_product_name

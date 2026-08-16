@@ -1,43 +1,13 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from pages.catalog_page import CatalogPage
 
 def test_catalog_page(browser, base_url):
-    browser.get(f"{base_url}/6-accessories")
 
-    wait = WebDriverWait(browser, 10)
+    page = CatalogPage(browser, base_url)
 
-    title = wait.until(
-        EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, "h1.page-title-section")
-        )
-    )
-    assert title.is_displayed()
+    page.open()
 
-    product_list = wait.until(
-        EC.visibility_of_element_located(
-            (By.ID, "js-product-list")
-        )
-    )
-    assert product_list.is_displayed()
-
-    product = wait.until(
-        EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, "article.product-miniature")
-        )
-    )
-    assert product.is_displayed()
-
-    price = wait.until(
-        EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, "div.product-miniature__price")
-        )
-    )
-    assert price.is_displayed()
-
-    sort = wait.until(
-        EC.visibility_of_element_located(
-            (By.ID, "sort_dropdown_button")
-        )
-    )
-    assert sort.is_displayed()
+    assert page.get_title().is_displayed()
+    assert page.get_product_list().is_displayed()
+    assert page.get_product().is_displayed()
+    assert page.get_price().is_displayed()
+    assert page.get_sort().is_displayed()
