@@ -1,5 +1,9 @@
+import logging
+import allure
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
+
+logger = logging.getLogger(__name__)
 
 class AdminProductFormPage(BasePage):
 
@@ -11,13 +15,17 @@ class AdminProductFormPage(BasePage):
         element = self.find(self.PRODUCT_NAME)
         return element.is_displayed()
 
+    @allure.step("Вводим название товара")
     def enter_product_name(self, name):
+        logger.info("Вводим название товара")
         self.type(self.PRODUCT_NAME, name)
 
     def get_product_name(self):
         return self.find(self.PRODUCT_NAME).get_attribute("value")
 
+    @allure.step("Сохраняем товар")
     def save(self):
+        logger.info("Сохраняем товар")
         self.click(self.SAVE_BUTTON)
 
     def get_success_message(self):

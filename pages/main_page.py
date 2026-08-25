@@ -1,7 +1,11 @@
+import logging
+import allure
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
+
+logger = logging.getLogger(__name__)
 
 class MainPage(BasePage):
 
@@ -51,7 +55,10 @@ class MainPage(BasePage):
             *self.PRODUCT_TITLE
         ).text
 
+    @allure.step("Добавляем товар в корзину")
     def add_product_to_cart(self, product):
+        logger.info("Добавляем товар в корзину")
+
         self.hover(product)
 
         button = product.find_element(
@@ -71,7 +78,9 @@ class MainPage(BasePage):
             *self.FIRST_PRODUCT_PRICE
         ).text
 
+    @allure.step("Меняем валюту на {currency}")
     def change_currency(self, currency):
+        logger.info("Переключаем валюту на: %s", currency)
 
         product = self.find(self.FIRST_PRODUCT)
 

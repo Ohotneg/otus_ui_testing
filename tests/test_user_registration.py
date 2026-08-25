@@ -1,7 +1,9 @@
 import time
 from pages.registration_page import RegistrationPage
 from pages.main_page import MainPage
+import allure
 
+@allure.title("Регистрация нового пользователя")
 def test_user_registration(browser, base_url):
 
     first_name = "Petr"
@@ -25,4 +27,5 @@ def test_user_registration(browser, base_url):
 
     main_page = MainPage(browser, base_url)
 
-    assert main_page.get_user_name() == f"{first_name} {last_name}"
+    with allure.step("Проверяем имя зарегистрированного пользователя"):
+        assert main_page.get_user_name() == f"{first_name} {last_name}"

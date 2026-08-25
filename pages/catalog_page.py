@@ -1,7 +1,11 @@
+import logging
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
+import allure
+
+logger = logging.getLogger(__name__)
 
 class CatalogPage(BasePage):
 
@@ -41,7 +45,10 @@ class CatalogPage(BasePage):
 
         return prices
 
+    @allure.step("Меняем валюту на {currency}")
     def change_currency(self, currency):
+        logger.info("Переключаем валюту на: %s", currency)
+
         products = self.find_all(self.PRODUCT)
 
         Select(
