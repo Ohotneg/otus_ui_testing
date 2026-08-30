@@ -2,6 +2,7 @@ import pytest
 from selenium import webdriver
 import logging
 import allure
+from selenium.webdriver.chrome.options import Options
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,7 +19,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--base-url",
         action="store",
-        default="http://localhost:8080"
+        default="http://prestashop"
     )
 
 
@@ -27,15 +28,23 @@ def browser(request):
     browser_name = request.config.getoption("--browser")
 
     if browser_name == "chrome":
-        driver = webdriver.Chrome()
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument("--force-device-scale-factor=1")
+        driver = webdriver.Chrome (options=options)
 
     elif browser_name == "firefox":
-        driver = webdriver.Firefox()
+        options = webdriver.FirefoxOptions()
+        options.add_argument("--headless")
+        options.add_argument("--width=1920")
+        options.add_argument("--height=1080")
+        driver = webdriver.Firefox(options=options)
 
     else:
         raise ValueError(f"Unsupported browser: {browser_name}")
-
-    driver.maximize_window()
 
     yield driver
 
@@ -55,8 +64,11 @@ def pytest_runtest_makereport(item, call):
         browser = item.funcargs.get("browser")
 
         if browser:
-            allure.attach(
-                browser.get_screenshot_as_png(),
-                name="screenshot",
-                attachment_type=allure.attachment_type.PNG
-            )
+            try:
+                allure.attach(
+                    browser.get_screenshot_as_png(),
+                    name="screenshot",
+                    attachment_type=allure.attachment_type.PNG
+                )
+            except Exception as e:
+                print(f"Не удалось сделать screenshot: {e}")

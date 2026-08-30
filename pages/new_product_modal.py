@@ -23,6 +23,11 @@ class NewProductModal(BasePage):
             self.find(self.MODAL_IFRAME)
         )
 
-        self.click(self.CREATE_BUTTON)
+        element = self.find(self.CREATE_BUTTON)
+
+        self.browser.execute_script(
+            "arguments[0].form.requestSubmit(arguments[0]);",
+            element
+        )
 
         self.browser.switch_to.default_content()

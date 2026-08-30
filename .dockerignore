@@ -1,0 +1,12 @@
+.venv/
+pycache/
+.pytest_cache/
+
+allure-results/
+allure-report/
+
+.git/
+.gitignore
+
+.idea/
+.vscode/
