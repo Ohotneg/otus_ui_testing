@@ -1,5 +1,7 @@
 from pages.main_page import MainPage
+import allure
 
+@allure.title("Смена валюты на главной странице")
 def test_change_currency_main(browser, base_url):
 
     page = MainPage(browser, base_url)
@@ -12,4 +14,5 @@ def test_change_currency_main(browser, base_url):
 
     price_after = page.get_first_product_price()
 
-    assert price_before != price_after
+    with allure.step("Проверяем изменение цены после смены валюты"):
+        assert price_before != price_after

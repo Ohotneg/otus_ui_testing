@@ -24,6 +24,3 @@ class ProductPage(BasePage):
 
     def get_size_select(self):
         return self.find(self.SIZE_SELECT)
-
-    def add_to_cart(self):
-        self.click(self.ADD_TO_CART)

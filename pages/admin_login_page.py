@@ -1,5 +1,9 @@
+import logging
+import allure
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
+
+logger = logging.getLogger(__name__)
 
 class AdminLoginPage(BasePage):
 
@@ -12,14 +16,18 @@ class AdminLoginPage(BasePage):
     STAY_LOGGED_IN = (By.ID, "stay_logged_in")
 
     def enter_email(self, email):
+        logger.info("Вводим email администратора")
         self.type(self.EMAIL, email)
 
     def enter_password(self, password):
+        logger.info("Вводим пароль администратора")
         self.type(self.PASSWORD, password)
 
     def click_login(self):
+        logger.info("Нажимаем кнопку входа в административную панель")
         self.click(self.LOGIN_BUTTON)
 
+    @allure.step("Входим в административную панель")
     def login(self, email, password):
         self.enter_email(email)
         self.enter_password(password)

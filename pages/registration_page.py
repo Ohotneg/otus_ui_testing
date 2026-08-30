@@ -1,6 +1,10 @@
+import logging
+import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
+
+logger = logging.getLogger(__name__)
 
 class RegistrationPage(BasePage):
 
@@ -29,13 +33,19 @@ class RegistrationPage(BasePage):
     def get_create_button(self):
         return self.find(self.CREATE_BUTTON)
 
+    @allure.step("Вводим имя пользователя")
     def enter_first_name(self, first_name):
+        logger.info("Вводим имя пользователя")
         self.type(self.FIRST_NAME, first_name)
 
+    @allure.step("Вводим email")
     def enter_email(self, email):
+        logger.info("Вводим email пользователя")
         self.type(self.EMAIL, email)
 
+    @allure.step("Принимаем условия использования")
     def agree_terms(self):
+        logger.info("Принимаем условия использования")
         element = self.find(self.AGREE_TERMS)
 
         self.browser.execute_script(
@@ -43,29 +53,26 @@ class RegistrationPage(BasePage):
             element
         )
 
+    @allure.step("Создаём аккаунт")
     def click_create_account(self):
+        logger.info("Нажимаем кнопку «Создать аккаунт»")
+
         self.scroll_to(self.CREATE_BUTTON)
-
-        button = self.find(self.CREATE_BUTTON)
-
-        self.browser.execute_script(
-            "arguments[0].scrollIntoView({block: 'center'});",
-            button
-        )
-
-        self.wait.until(
-            EC.element_to_be_clickable(self.CREATE_BUTTON)
-        )
-
         self.click(self.CREATE_BUTTON)
 
+    @allure.step("Вводим фамилию пользователя")
     def enter_last_name(self, last_name):
+        logger.info("Вводим фамилию пользователя")
         self.type(self.LAST_NAME, last_name)
 
+    @allure.step("Вводим пароль пользователя")
     def enter_password(self, password):
+        logger.info("Вводим пароль пользователя")
         self.type(self.PASSWORD, password)
 
+    @allure.step("Принимаем политику конфиденциальности")
     def accept_customer_privacy(self):
+        logger.info("Принимаем политику конфиденциальности")
         element = self.find(self.CUSTOMER_PRIVACY)
 
         self.browser.execute_script(

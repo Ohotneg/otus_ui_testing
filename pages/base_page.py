@@ -1,6 +1,9 @@
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import logging
+
+logger = logging.getLogger(__name__)
 
 class BasePage:
 
@@ -12,6 +15,7 @@ class BasePage:
         self.wait = WebDriverWait(browser, 10)
 
     def open(self):
+        logger.info("Открываем страницу: %s", self.base_url + self.URL)
         self.browser.get(self.base_url + self.URL)
 
     def find(self, locator):
@@ -20,6 +24,7 @@ class BasePage:
         )
 
     def click(self, locator):
+        logger.info("Нажимаем на элемент: %s", locator)
         element = self.wait.until(
             EC.element_to_be_clickable(locator)
         )
@@ -31,16 +36,19 @@ class BasePage:
         )
 
     def hover(self, element):
+        logger.info("Наводим курсор на элемент")
         ActionChains(self.browser).move_to_element(element).perform()
 
     def type(self, locator, text):
+        logger.info("Вводим текст в элемент: %s", locator)
         element = self.find(locator)
         element.clear()
         element.send_keys(text)
 
     def scroll_to(self, locator):
+        logger.info("Прокручиваем страницу к элементу: %s", locator)
         element = self.find(locator)
         self.browser.execute_script(
-            "arguments[0].scrollIntoView({block: 'center'});",
+            "arguments[0].scrollIntoView({block: 'center', behavior: 'instant'});",
             element
         )

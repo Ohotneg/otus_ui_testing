@@ -1,5 +1,7 @@
 from pages.catalog_page import CatalogPage
+import allure
 
+@allure.title("Смена валюты в каталоге")
 def test_change_currency_catalog(browser, base_url):
 
     page = CatalogPage(browser, base_url)
@@ -12,4 +14,5 @@ def test_change_currency_catalog(browser, base_url):
 
     prices_after = page.get_all_prices()
 
-    assert prices_before != prices_after
+    with allure.step("Проверяем изменение цен после смены валюты"):
+        assert prices_before != prices_after

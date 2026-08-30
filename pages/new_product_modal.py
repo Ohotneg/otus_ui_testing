@@ -1,5 +1,9 @@
+import logging
+import allure
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
+
+logger = logging.getLogger(__name__)
 
 class NewProductModal(BasePage):
 
@@ -7,7 +11,9 @@ class NewProductModal(BasePage):
 
     CREATE_BUTTON = (By.ID, "create_product_create")
 
+    @allure.step("Создаем стандартный товар")
     def create_standard_product(self):
+        logger.info("Создаем стандартный товар")
 
         self.wait.until(
             lambda d: d.find_element(*self.MODAL_IFRAME)
