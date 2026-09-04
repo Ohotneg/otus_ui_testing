@@ -37,6 +37,12 @@ class BasePage:
 
     def hover(self, element):
         logger.info("Наводим курсор на элемент")
+
+        self.browser.execute_script(
+            "arguments[0].scrollIntoView({block: 'center', behavior: 'instant'});",
+            element
+        )
+
         ActionChains(self.browser).move_to_element(element).perform()
 
     def type(self, locator, text):
