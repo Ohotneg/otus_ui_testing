@@ -1,0 +1,156 @@
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: prestashop-db
+
+    command: --default-authentication-plugin=mysql_native_password
+
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: prestashop
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+
+  prestashop:
+    image: prestashop/prestashop:9.1.4
+    container_name: prestashop
+
+    depends_on:
+      - db
+
+    restart: unless-stopped
+
+    ports:
+      - "8080:80"
+      - "80:80"
+
+    environment:
+      # ---------- Database ----------
+      DB_SERVER: db
+      DB_NAME: prestashop
+      DB_USER: root
+      DB_PASSWD: admin
+
+      # ---------- Automatic installation ----------
+      PS_INSTALL_AUTO: 1
+      PS_INSTALL_DB: 1
+      PS_ERASE_DB: 1
+
+      # ---------- URLs ----------
+      PS_DOMAIN: prestashop
+
+      # ---------- Folders ----------
+      PS_FOLDER_ADMIN: admin_test
+      PS_FOLDER_INSTALL: install_test
+
+      # ---------- Demo data ----------
+      PS_DEMO_MODE: 0
+
+      # ---------- Admin ----------
+      ADMIN_MAIL: admin@example.com
+      ADMIN_PASSWD: Admin1357!
+
+      # ---------- Language ----------
+      PS_LANGUAGE: en
+      PS_COUNTRY: GB
+
+    volumes:
+      - psdata:/var/www/html
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://prestashop"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+    networks:
+      - default
+      - selenoid
+
+
+  prestashop_postinstall:
+    image: alpine:3.19
+    container_name: prestashop-postinstall
+
+    restart: "no"
+
+    depends_on:
+      - prestashop
+
+    volumes:
+      - psdata:/var/www/html
+
+    command: >
+      sh -lc '
+        apk add --no-cache curl >/dev/null 2>&1 || true;
+
+        echo "Waiting for PrestaShop HTTP to respond...";
+        until curl -fsS http://prestashop/ >/dev/null; do
+          sleep 5;
+        done;
+
+        echo "PrestaShop HTTP is available.";
+
+        echo "Waiting for config to exist...";
+        until [ -f /var/www/html/config/settings.inc.php ] ||
+              [ -f /var/www/html/app/config/parameters.php ]; do
+          sleep 2;
+        done;
+
+        echo "PrestaShop config detected.";
+
+        echo "Extra grace period...";
+        sleep 15;
+
+        echo "Removing install folders...";
+        rm -rf /var/www/html/install /var/www/html/install-dev || true;
+
+        echo "Clearing cache...";
+        rm -rf /var/www/html/var/cache/* || true;
+
+        echo "Postinstall completed."
+      '
+
+    networks:
+      - default
+
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: prestashop-tests
+
+    environment:
+      SELENOID_URL: http://selenoid:4444/wd/hub
+
+    depends_on:
+      prestashop_postinstall:
+        condition: service_completed_successfully
+
+    command:
+      - tests
+      - --browser
+      - chrome
+      - --base-url
+      - http://prestashop
+
+    networks:
+      - selenoid
+
+
+volumes:
+  mysql_data:
+  psdata:
+
+
+networks:
+  selenoid:
+    external: true
+    name: selenoid

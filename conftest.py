@@ -1,3 +1,4 @@
+import os
 import pytest
 from selenium import webdriver
 import logging
@@ -22,7 +23,6 @@ def pytest_addoption(parser):
         default="http://prestashop"
     )
 
-
 @pytest.fixture
 def browser(request):
     browser_name = request.config.getoption("--browser")
@@ -34,22 +34,36 @@ def browser(request):
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--window-size=1920,1080")
         options.add_argument("--force-device-scale-factor=1")
-        driver = webdriver.Chrome (options=options)
+
+        selenoid_url = os.getenv("SELENOID_URL")
+
+        if selenoid_url:
+            driver = webdriver.Remote(
+                command_executor=selenoid_url,
+                options=options
+            )
+        else:
+            driver = webdriver.Chrome(options=options)
 
     elif browser_name == "firefox":
         options = webdriver.FirefoxOptions()
         options.add_argument("--headless")
         options.add_argument("--width=1920")
         options.add_argument("--height=1080")
-        driver = webdriver.Firefox(options=options)
+        selenoid_url = os.getenv("SELENOID_URL")
+        if selenoid_url:
+            driver = webdriver.Remote(
+                command_executor=selenoid_url,
+                options=options
+            )
+        else:
+            driver = webdriver.Firefox(options=options)
 
     else:
         raise ValueError(f"Unsupported browser: {browser_name}")
 
     yield driver
-
     driver.quit()
-
 
 @pytest.fixture
 def base_url(request):
