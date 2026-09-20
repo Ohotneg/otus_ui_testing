@@ -36,6 +36,9 @@ def browser(request):
         options.add_argument("--force-device-scale-factor=1")
 
         selenoid_url = os.getenv("SELENOID_URL")
+        browser_version = os.getenv("BROWSER_VERSION")
+
+        options.set_capability("browserVersion", browser_version)
 
         if selenoid_url:
             driver = webdriver.Remote(
@@ -50,7 +53,12 @@ def browser(request):
         options.add_argument("--headless")
         options.add_argument("--width=1920")
         options.add_argument("--height=1080")
+
         selenoid_url = os.getenv("SELENOID_URL")
+        browser_version = os.getenv("BROWSER_VERSION")
+
+        options.set_capability("browserVersion", browser_version)
+
         if selenoid_url:
             driver = webdriver.Remote(
                 command_executor=selenoid_url,

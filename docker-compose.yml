@@ -129,6 +129,7 @@ services:
 
     environment:
       SELENOID_URL: http://selenoid:4444/wd/hub
+      BROWSER_VERSION: ${BROWSER_VERSION:-128.0}
 
     depends_on:
       prestashop_postinstall:
@@ -137,9 +138,11 @@ services:
     command:
       - tests
       - --browser
-      - chrome
+      - ${BROWSER:-chrome}
       - --base-url
-      - http://prestashop
+      - ${PRESTASHOP_URL:-http://prestashop}
+      - -n
+      - ${THREADS:-1}
 
     networks:
       - selenoid
