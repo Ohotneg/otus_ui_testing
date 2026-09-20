@@ -135,6 +135,9 @@ services:
       prestashop_postinstall:
         condition: service_completed_successfully
 
+    volumes:
+      - ./allure-results:/app/allure-results
+
     command:
       - tests
       - --browser
@@ -143,6 +146,7 @@ services:
       - ${PRESTASHOP_URL:-http://prestashop}
       - -n
       - ${THREADS:-1}
+      - --alluredir=/app/allure-results
 
     networks:
       - selenoid
